@@ -1,2 +1,2 @@
 # phplist-cosign
-How to log in and out of phplist with the cosign module.
+How to log in and out of phplist using single sign on webaccess cosign authentication.
