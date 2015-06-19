@@ -15,7 +15,7 @@
  *
  * @category  phplist
  * @package   CosignPlugin
- * @author    Duncan Cameron, Brad Allen Fisher
+ * @author    Duncan Cameron
  * @copyright 2015 Duncan Cameron
  * @license   http://www.gnu.org/licenses/gpl.html GNU General Public License, Version 3
  */
@@ -36,6 +36,8 @@ class CosignPlugin extends phplistPlugin
   public $authors = 'Duncan Cameron, Brad Allen Fisher';
   public $description = 'Use Cosign SSO to authenticate administrators';
   public $enabled = 1;
+
+  // these 2 settings create fields on lists/admin/?page=configure under the cosign section
   public $settings = array(
     'cosign_realm' => array(
       'description' => 'Cosign required realm (leave empty to not validate)',
@@ -60,8 +62,6 @@ class CosignPlugin extends phplistPlugin
 
   public function activate()
   {
-    //var_dump($_SERVER);
-    //var_dump($_SESSION);
 
     global $tables;
 
@@ -69,6 +69,7 @@ class CosignPlugin extends phplistPlugin
       return;
     }
 
+    //set in lists/admin/?page=configure under the cosign section
     $requiredRealm = getConfig('cosign_realm');
 
     if ($requiredRealm) {
@@ -108,20 +109,30 @@ class CosignPlugin extends phplistPlugin
   //When user logs out redirect them to the webaccess logout page and then back to here.
   public function logout()
   {
+    // this is set in the settings page of phplist: lists/admin/?page=configure under the cosign section
     $cosignLogout = getConfig('cosign_logout');
 
+    // if your browser is still carrying around the cookie, you will be logged right back in after logout
+    // so destroy it.
     if (isset($_SERVER['COSIGN_SERVICE'])) {
       $service_name = $_SERVER['COSIGN_SERVICE'];
       setcookie( $service_name , "null", time()-1, '/', "", 1 );
     }
 
+    //remove server vars on logout as well.
     $_SERVER['REMOTE_USER'] = "";
     $_SESSION['adminloggedin'] = "";
     $_SESSION['logindetails'] = "";
+
+    //destroy the session
     session_destroy();
 
-
+    //reroute the app to the proper cosign logout url
+    //this is set from above and using the getConfig(); function to retrieve it
+    //from lists/admin/?page=configure
     header( "Location: $cosignLogout" );
+
+    //if you don't exit you will not... exit :)
     exit();
   }
 }
