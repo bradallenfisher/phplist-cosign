@@ -29,6 +29,7 @@ class CosignPlugin extends phplistPlugin
     public $name = 'Cosign Plugin';
     public $description = 'Use Cosign SSO to authenticate administrators';
     public $enabled = 1;
+    public $version = '1.0';
 
     // these 2 settings create fields on lists/admin/?page=configure under the cosign section
     public $settings = array(
