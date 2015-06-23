@@ -84,17 +84,17 @@ class CosignPlugin extends phplistPlugin
             );
 
             if ($row) {
-                    list($id, $password, $superuser, $privileges) = $row;
-                    $_SESSION['adminloggedin'] = $_SERVER['REMOTE_ADDR'];
-                    $_SESSION['logindetails'] = array(
-                            'adminname' => $_SERVER['REMOTE_USER'],
-                            'id' => $id,
-                            'superuser' => $superuser,
-                            'passhash' => $password,
-                    );
+                list($id, $password, $superuser, $privileges) = $row;
+                $_SESSION['adminloggedin'] = $_SERVER['REMOTE_ADDR'];
+                $_SESSION['logindetails'] = array(
+                    'adminname' => $_SERVER['REMOTE_USER'],
+                    'id' => $id,
+                    'superuser' => $superuser,
+                    'passhash' => $password,
+                );
 
                 if ($privileges) {
-                        $_SESSION['privileges'] = unserialize($privileges);
+                    $_SESSION['privileges'] = unserialize($privileges);
                 }
             }
         }
@@ -103,6 +103,9 @@ class CosignPlugin extends phplistPlugin
     //When user logs out redirect them to the webaccess logout page and then back to here.
     public function logout()
     {
+        if (empty($_SERVER['REMOTE_USER'])) {
+            return;
+        }
         // this is set in the settings page of phplist: lists/admin/?page=configure under the cosign section
         $cosignLogout = getConfig('cosign_logout');
 
@@ -113,7 +116,6 @@ class CosignPlugin extends phplistPlugin
             $service_name = $_SERVER['COSIGN_SERVICE'];
             setcookie( $service_name , "null", time()-1, '/', "", 1 );
         }
-
 
         //remove server vars on logout as well.
         $_SERVER['REMOTE_USER'] = "";
