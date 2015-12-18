@@ -56,7 +56,8 @@ class CosignPlugin extends phplistPlugin
 
     public function activate()
     {
-
+        parent::activate();
+        
         global $tables;
 
         if (!empty($_SESSION['adminloggedin'])) {
